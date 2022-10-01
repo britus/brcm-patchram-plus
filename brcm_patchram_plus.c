@@ -515,7 +515,7 @@ parse_cmd_line(int argc, char **argv)
 {
 	int c;
 	int ret = 0;
-	int optind = 0;
+	int port_ind = argc-1;
 
 	/* parsers */
 	typedef int (*PFI)();
@@ -550,8 +550,6 @@ parse_cmd_line(int argc, char **argv)
 
 		c = getopt_long_only (argc, argv, 
 				"d", long_options, &option_index);
-
-		optind++;	
 	
 		if (c == -1) {
 			break;
@@ -590,15 +588,15 @@ parse_cmd_line(int argc, char **argv)
 		return(1);
 	}
 
-	log2file ("optind: %d argc: %d\n", optind, argc);
+	log2file ("port_ind: %d argc: %d\n", port_ind, argc);
 
-	if (optind < argc) {
+	if (port_ind < argc) {
 		if (debug)
-			log2file ("%s \n", argv[optind]);
+			log2file ("%s \n", argv[port_ind]);
 
-		if ((uart_fd = open(argv[optind], O_RDWR | O_NOCTTY)) == -1) {
+		if ((uart_fd = open(argv[port_ind], O_RDWR | O_NOCTTY)) == -1) {
 			log2file("port %s could not be opened, error %d\n",
-					argv[2], errno);
+					argv[port_ind], errno);
 		}
 	}
 
