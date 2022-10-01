@@ -515,16 +515,23 @@ parse_cmd_line(int argc, char **argv)
 {
 	int c;
 	int ret = 0;
+	int optind = 0;
 
+	/* parsers */
 	typedef int (*PFI)();
-
-	PFI parse[] = { parse_patchram, parse_baudrate,
-		parse_bdaddr, parse_enable_lpm, parse_enable_hci,
+	PFI parse[] = { 
+		parse_patchram, 
+		parse_baudrate,
+		parse_bdaddr, 
+		parse_enable_lpm, 
+		parse_enable_hci,
 		parse_use_baudrate_for_download,
-		parse_scopcm, parse_i2s, parse_no2bytes, parse_tosleep};
+		parse_scopcm, 
+		parse_i2s, 
+		parse_no2bytes, 
+		parse_tosleep};
 
 	while (1) {
-		int this_option_optind = optind ? optind : 1;
 		int option_index = 0;
 
 		static struct option long_options[] = {
@@ -541,9 +548,9 @@ parse_cmd_line(int argc, char **argv)
 			{0, 0, 0, 0}
 		};
 
-		c = getopt_long_only (argc, argv, "d", long_options,
-				&option_index);
-
+		c = getopt_long_only (argc, argv, 
+				"d", long_options, &option_index);
+		
 		if (c == -1) {
 			break;
 		}
@@ -571,11 +578,11 @@ parse_cmd_line(int argc, char **argv)
 				usage(argv[0]);
 				break;
 		}
-
 		if (ret) {
 			usage(argv[0]);
 			break;
 		}
+		optind++;	
 	}
 
 	if (ret) {
@@ -585,6 +592,7 @@ parse_cmd_line(int argc, char **argv)
 	if (optind < argc) {
 		if (debug)
 			log2file ("%s \n", argv[optind]);
+
 		if ((uart_fd = open(argv[optind], O_RDWR | O_NOCTTY)) == -1) {
 			log2file("port %s could not be opened, error %d\n",
 					argv[2], errno);
@@ -915,11 +923,14 @@ main (int argc, char **argv)
     daemonize( "brcm_patchram_plus" );
 #endif
 	log2file("###AMPAK FW Auto detection patch version = [%s]###\n", FW_TABLE_VERSION);
+
 	if (parse_cmd_line(argc, argv)) {
+		log2file("#Parse command line failed. rc=%d\n", -1);
 		exit(1);
 	}
 
 	if (uart_fd < 0) {
+		log2file("#UART closed. rc=%d\n", -2);
 		exit(2);
 	}
 
@@ -932,36 +943,44 @@ main (int argc, char **argv)
     proc_open_patchram();
 
 	if (use_baudrate_for_download) {
+		log2file("#Use baudrate for download. rc=%d\n", 0);
 		if (termios_baudrate) {
 			proc_baudrate();
 		}
 	}
 
 	if (hcdfile_fd > 0) {
+		log2file("#Patching ram. rc=%d\n", 0);
 		proc_patchram();
 	}
 
 	if (termios_baudrate) {
+		log2file("#Setup baudrate. rc=%d\n", 0);
 		proc_baudrate();
 	}
 
 	if (bdaddr_flag) {
+		log2file("#Setup MAC address. rc=%d\n", 0);
 		proc_bdaddr();
 	}
 
 	if (enable_lpm) {
+		log2file("#Enable LPM. rc=%d\n", 0);
 		proc_enable_lpm();
 	}
 
 	if (scopcm) {
+		log2file("#Enable SCOtoPCM. rc=%d\n", 0);
 		proc_scopcm();
 	}
 
 	if (i2s) {
+		log2file("#Enable I2C. rc=%d\n", 0);
 		proc_i2s();
 	}
 
 	if (enable_hci) {
+		log2file("#Enter HCI loop. rc=%d\n", 0);
 		proc_enable_hci();
 
 		while (1) {
