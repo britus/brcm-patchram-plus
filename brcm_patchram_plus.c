@@ -592,7 +592,7 @@ parse_cmd_line(int argc, char **argv)
 
 	if (port_ind < argc) {
 		if (debug)
-			log2file ("%s \n", argv[port_ind]);
+			log2file ("uart: %s\n", argv[port_ind]);
 
 		if ((uart_fd = open(argv[port_ind], O_RDWR | O_NOCTTY)) == -1) {
 			log2file("port %s could not be opened, error %d\n",
