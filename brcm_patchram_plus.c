@@ -550,7 +550,9 @@ parse_cmd_line(int argc, char **argv)
 
 		c = getopt_long_only (argc, argv, 
 				"d", long_options, &option_index);
-		
+
+		optind++;	
+	
 		if (c == -1) {
 			break;
 		}
@@ -582,12 +584,13 @@ parse_cmd_line(int argc, char **argv)
 			usage(argv[0]);
 			break;
 		}
-		optind++;	
 	}
 
 	if (ret) {
 		return(1);
 	}
+
+	log2file ("optind: %d argc: %d\n", optind, argc);
 
 	if (optind < argc) {
 		if (debug)
