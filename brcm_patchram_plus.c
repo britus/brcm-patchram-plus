@@ -606,6 +606,8 @@ parse_cmd_line(int argc, char **argv)
 void
 init_uart()
 {
+	log2file ("init_uart:\n");
+
 	tcflush(uart_fd, TCIOFLUSH);
 	tcgetattr(uart_fd, &termios);
 
@@ -689,6 +691,7 @@ hci_send_cmd(uchar *buf, int len)
 void
 expired(int sig)
 {
+	log2file("expired: send hci_reset\n");
 	hci_send_cmd(hci_reset, sizeof(hci_reset));
 	alarm(4);
 }
@@ -698,11 +701,12 @@ proc_reset()
 {
 	signal(SIGALRM, expired);
 
-
+	log2file("proc_reset: send hci_reset\n");
 	hci_send_cmd(hci_reset, sizeof(hci_reset));
 
 	alarm(4);
 
+	log2file("proc_reset: read resp. event\n");
 	read_event(uart_fd, buffer);
 
 	alarm(0);
@@ -791,6 +795,7 @@ proc_patchram()
 		cfsetispeed(&termios, B115200);
 		tcsetattr(uart_fd, TCSANOW, &termios);
 	}
+
 	proc_reset();
 }
 
