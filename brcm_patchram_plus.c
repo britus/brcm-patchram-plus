@@ -125,6 +125,8 @@
 #include <string.h>
 #include <signal.h>
 
+#include "daemonize.h"
+
 #ifdef ANDROID
 #include <cutils/properties.h>
 #define LOG_TAG "brcm_patchram_plus"
@@ -308,6 +310,7 @@ typedef struct {
 tBaudRates baud_rates[] = {
 	{ 115200, B115200 },
 	{ 230400, B230400 },
+#ifdef __linux
 	{ 460800, B460800 },
 	{ 500000, B500000 },
 	{ 576000, B576000 },
@@ -321,6 +324,7 @@ tBaudRates baud_rates[] = {
 #ifndef __CYGWIN__
 	{ 3500000, B3500000 },
 	{ 4000000, B4000000 }
+#endif
 #endif
 };
 
