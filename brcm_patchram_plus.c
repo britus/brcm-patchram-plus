@@ -717,6 +717,7 @@ proc_read_local_name()
 {
     int i;
     char *p_name;
+	log2file("proc_read_local_name:\n");
     hci_send_cmd(hci_read_local_name, sizeof(hci_read_local_name));
     read_event(uart_fd, buffer);
     p_name = &buffer[1+HCI_EVT_CMD_CMPL_LOCAL_NAME_STRING];
@@ -732,6 +733,9 @@ proc_open_patchram()
     char fw_path[1024];
     char *p;
     int i;
+
+	log2file("proc_open_patchram:\n");
+
     fw_auto_detection_entry_t *p_entry;
     p_entry = (fw_auto_detection_entry_t *)fw_auto_detection_table;
     while (p_entry->chip_id != NULL)
@@ -765,6 +769,8 @@ void
 proc_patchram()
 {
 	int len;
+
+	log2file("proc_patchram:\n");
 
 	hci_send_cmd(hci_download_minidriver, sizeof(hci_download_minidriver));
 
@@ -802,8 +808,8 @@ proc_patchram()
 void
 proc_baudrate()
 {
+	log2file("proc_baudrate:\n");
 	hci_send_cmd(hci_update_baud_rate, sizeof(hci_update_baud_rate));
-
 	read_event(uart_fd, buffer);
 
 	cfsetospeed(&termios, termios_baudrate);
@@ -818,22 +824,23 @@ proc_baudrate()
 void
 proc_bdaddr()
 {
+	log2file("proc_bdaddr:\n");
 	hci_send_cmd(hci_write_bd_addr, sizeof(hci_write_bd_addr));
-
 	read_event(uart_fd, buffer);
 }
 
 void
 proc_enable_lpm()
 {
+	log2file("proc_enable_lpm:\n");
 	hci_send_cmd(hci_write_sleep_mode, sizeof(hci_write_sleep_mode));
-
 	read_event(uart_fd, buffer);
 }
 
 void
 proc_scopcm()
 {
+	log2file("proc_scopcm:\n");
 	hci_send_cmd(hci_write_sco_pcm_int,
 		sizeof(hci_write_sco_pcm_int));
 
@@ -848,6 +855,7 @@ proc_scopcm()
 void
 proc_i2s()
 {
+	log2file("proc_i2s:\n");
 	hci_send_cmd(hci_write_i2spcm_interface_param,
 		sizeof(hci_write_i2spcm_interface_param));
 
@@ -859,6 +867,9 @@ proc_enable_hci()
 {
 	int i = N_HCI;
 	int proto = HCI_UART_H4;
+	
+	log2file("proc_enable_hci:\n");
+
 	if (ioctl(uart_fd, TIOCSETD, &i) < 0) {
 		log2file("Can't set line discipline\n");
 		return;
@@ -868,6 +879,7 @@ proc_enable_hci()
 		log2file("Can't set hci protocol\n");
 		return;
 	}
+
 	log2file("Done setting line discpline\n");
 	return;
 }
@@ -928,7 +940,8 @@ main (int argc, char **argv)
     }
     daemonize( "brcm_patchram_plus" );
 #endif
-	log2file("###AMPAK FW Auto detection patch version = [%s]###\n", FW_TABLE_VERSION);
+	
+	log2file("### AMPAK FW Auto detection patch version = [%s] ###\n", FW_TABLE_VERSION);
 
 	if (parse_cmd_line(argc, argv)) {
 		log2file("#Parse command line failed. rc=%d\n", -1);
