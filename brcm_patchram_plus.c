@@ -753,15 +753,18 @@ proc_open_patchram()
 	if ((hcdfile_fd = open(fw_path, O_RDONLY)) == -1) {
 		log2file("file %s could not be opened, error %d\n", fw_path , errno);
 	}
-    p = local_name;
-	log2file("Retry lower case FW name\n");
-    for (i=0; (i < LOCAL_NAME_BUFFER_LEN)||(*(p+i) != 0); i++)
-        *(p+i) = tolower(*(p+i));
-    sprintf(fw_path,"%s/%s.hcd",fw_folder_path,local_name);
-	log2file("FW path = %s\n", fw_path);
-	if ((hcdfile_fd = open(fw_path, O_RDONLY)) == -1) {
-		log2file("file %s could not be opened, error %d\n", fw_path, errno);
-		exit(5);
+
+	if (hcdfile_fd <= 0) {
+		log2file("Retry lower case FW name...\n");
+		p = local_name;
+		for (i=0; (i < LOCAL_NAME_BUFFER_LEN)||(*(p+i) != 0); i++)
+			*(p+i) = tolower(*(p+i));
+		sprintf(fw_path,"%s/%s.hcd",fw_folder_path,local_name);
+		log2file("FW path = %s\n", fw_path);
+		if ((hcdfile_fd = open(fw_path, O_RDONLY)) == -1) {
+			log2file("file %s could not be opened, error %d\n", fw_path, errno);
+			exit(5);
+		}
 	}
 
 }
