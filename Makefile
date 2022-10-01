@@ -5,7 +5,7 @@ OBJECTS = daemonize.o brcm_patchram_plus.o
 SRCS = $(OBJECTS:.o=.c)
 DEPENDENCY = daemonize.h
 
-GXX = arm-linux-gcc
+GXX = gcc
 CFLAGS = -c -Os -Wall
 INC = -I./ 
 
