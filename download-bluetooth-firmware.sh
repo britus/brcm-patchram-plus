@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TOOL="/bin/brcm_patchram_plus"
-FWPATH="/lib/firmware/ap6212"
+FWPATH="/lib/firmware/ap6212/"
 
 SERIALPORT="ttySAC1"
 
