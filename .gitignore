@@ -5,3 +5,6 @@ brcm-patchram-plus.cxxflags
 brcm-patchram-plus.files
 brcm-patchram-plus.includes
 brcm-patchram-plus.creator.user
+*.o
+*.a
+*.so
