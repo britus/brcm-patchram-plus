@@ -1,7 +1,0 @@
-LICENSE
-Makefile
-README.md
-brcm_patchram_plus.c
-daemonize.c
-daemonize.h
-download-bluetooth-firmware.sh
