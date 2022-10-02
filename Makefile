@@ -1,17 +1,17 @@
 .SUFFIXES : .c .o
 
-OBJECTS = daemonize.o brcm_patchram_plus.o
+SRCS   = $(OBJECTS:.o=.c)
 
-SRCS = $(OBJECTS:.o=.c)
+GXX	   = gcc
+CFLAGS = -c -Os -Wall
+INC    = -I./ 
+
+TARGET     = brcm_patchram_plus
+OBJECTS    = daemonize.o brcm_patchram_plus.o
 DEPENDENCY = daemonize.h
 
-GXX = gcc
-CFLAGS = -c -Os -Wall
-INC = -I./ 
+all : $(TARGET)
 
-TARGET = brcm_patchram_plus
-
-all : brcm_patchram_plus
 $(TARGET) : $(OBJECTS)
 		$(GXX) -static -o $(TARGET) $(OBJECTS)
 
@@ -21,3 +21,5 @@ $(TARGET) : $(OBJECTS)
 clean :
 		rm -rf $(OBJECTS) $(TARGET) core
 
+install: $(TARGET)
+	cp $(TARGET) /bin/$(TARGET)
