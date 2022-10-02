@@ -22,4 +22,4 @@ clean :
 		rm -rf $(OBJECTS) $(TARGET) core
 
 install: $(TARGET)
-	cp $(TARGET) /bin/$(TARGET)
+	mv $(TARGET) /bin/$(TARGET)
