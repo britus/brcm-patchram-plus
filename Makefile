@@ -10,6 +10,8 @@ TARGET     = brcm_patchram_plus
 OBJECTS    = daemonize.o brcm_patchram_plus.o
 DEPENDENCY = daemonize.h
 
+SCRIPT     = download-bluetooth-firmware.sh
+
 all : $(TARGET)
 
 $(TARGET) : $(OBJECTS)
@@ -22,4 +24,5 @@ clean :
 		rm -rf $(OBJECTS) $(TARGET) core
 
 install: $(TARGET)
+	cp $(SCRIPT) /usr/local/bin/$(SCRIPT)
 	mv $(TARGET) /bin/$(TARGET)
