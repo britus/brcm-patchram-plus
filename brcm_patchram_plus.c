@@ -711,7 +711,10 @@ void hci_send_cmd(uchar* buf, int len)
         dump(buf, len);
     }
 
-    write(uart_fd, buf, len);
+    if (write(uart_fd, buf, len) != len) {
+        log2file("Failed to send HCI command.\n");
+        exit(5);
+    }
 }
 
 void expired(int sig)
@@ -800,22 +803,27 @@ void proc_patchram()
     read_event(uart_fd, buffer);
 
     if (!no2bytes) {
-        read(uart_fd, &buffer[0], 2);
+        if (read(uart_fd, &buffer[0], 2) != 2) {
+            log2file("Failed to read from uart.\n");
+            exit(5);
+        }
     }
 
     if (tosleep) {
         usleep(tosleep);
     }
 
-    while (read(hcdfile_fd, &buffer[1], 3)) {
+    while (read(hcdfile_fd, &buffer[1], 3) == 3) {
         buffer[0] = 0x01;
 
         len = buffer[3];
 
-        read(hcdfile_fd, &buffer[4], len);
+        if (read(hcdfile_fd, &buffer[4], len) != len) {
+            log2file("Failed to read from FW file.\n");
+            exit(5);
+        }
 
         hci_send_cmd(buffer, len + 4);
-
         read_event(uart_fd, buffer);
     }
 
