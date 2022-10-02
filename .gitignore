@@ -8,3 +8,4 @@ brcm-patchram-plus.creator.user
 *.o
 *.a
 *.so
+.qtc_clangd/
