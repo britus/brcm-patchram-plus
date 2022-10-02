@@ -125,6 +125,7 @@
 #include <ctype.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "daemonize.h"
 
