@@ -163,9 +163,9 @@ int isAlreadyRunning()
        log2file("can't lock %s: %s\n", LOCKFILE, strerror(errno));
        exit(1);
    }
-   ftruncate(fd, 0);
+   if (ftruncate(fd, 0)) {} 
    sprintf(buf, "%ld", (long)getpid());
-   write(fd, buf, strlen(buf)+1);
+   if (write(fd, buf, strlen(buf)+1)) {}
    return (0);
 }
 
