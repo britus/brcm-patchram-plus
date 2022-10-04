@@ -1039,10 +1039,11 @@ int main(int argc, char** argv)
         exit(2);
     }
 
-    if (!init_uart(&termios)) {
+    if (init_uart(&termios)) {
         log2file("#UART initialization failed. rc=%d\n", -2);
         exit(2);
     }
+
     proc_reset();
     proc_read_local_name();
     proc_open_patchram();
