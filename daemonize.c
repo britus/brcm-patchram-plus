@@ -41,20 +41,8 @@
 #include <string.h>
 
 #include "daemonize.h"
-extern void log2file(const char *fmt, ...);
 
-/*
- * Name: daemonize
- *
- * Purpose: 将应用程序作为守护进程运行 
- *
- * Params:
- *          [1]cmd: 传入程序的名称，用于syslog
- *
- * Return: None
- *
- * Note: None
- */
+extern void log2file(const char *fmt, ...);
 
 void daemonize(const char *cmd)
 {
@@ -143,20 +131,6 @@ void daemonize(const char *cmd)
     }
 }
 
-
-/*
- * Name: lockfile
- *
- * Purpose: 给一个文件描述符加上锁
- *
- * Params:
- *          [1]fd: 文件的描述符
- *
- * Return: 成功返回0, 有错误发生返回-1
- *
- * Note: None
- */
-
 #define LOCKMODE (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 
 int lockfile(int fd)
@@ -169,19 +143,6 @@ int lockfile(int fd)
     fl.l_len = 0;
     return(fcntl(fd, F_SETLK, &fl));
 }
-
-/*
- * Name: isAlreadyRunning
- *
- * Purpose: 判断守护进程是否已经有一个实例在运行
- *
- * Params: None
- *
- * Return: 守护进程已经有一个实例在运行时返回true, 否则返回false
- *
- * Note: None
- */
-
 
 int isAlreadyRunning()
 {

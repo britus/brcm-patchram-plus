@@ -159,6 +159,11 @@
 #define HCI_UART_3WIRE 2
 #define HCI_UART_H4DS 3
 #define HCI_UART_LL 4
+#define HCI_UART_ATH3K 5
+#define HCI_UART_INTEL 6
+#define HCI_UART_BCM 7
+#define HCI_UART_QCA 8
+
 #define HCI_EVT_CMD_CMPL_LOCAL_NAME_STRING 6
 
 #define LOCAL_NAME_BUFFER_LEN 32
@@ -255,6 +260,18 @@ uchar hci_write_i2spcm_interface_param[] = {
     0x01, 0x6d, 0xFC, 0x04, 0x00,
     0x00, 0x00, 0x00
 };
+
+/*
+#define HCI_OP_READ_LOCAL_VERSION	0x1001
+struct hci_rp_read_local_version {
+        __u8     status;
+        __u8     hci_ver;
+        __le16   hci_rev;
+        __u8     lmp_ver;
+        __le16   manufacturer;
+        __le16   lmp_subver;
+} __packed;
+*/
 
 //{{ add by FriendlyARM
 static int _debug = 1;
@@ -652,13 +669,17 @@ void init_uart()
 #endif
 
     termios.c_cflag |= CRTSCTS;
+    
     tcsetattr(uart_fd, TCSANOW, &termios);
     tcflush(uart_fd, TCIOFLUSH);
+
     tcsetattr(uart_fd, TCSANOW, &termios);
     tcflush(uart_fd, TCIOFLUSH);
-    tcflush(uart_fd, TCIOFLUSH);
+    // tcflush(uart_fd, TCIOFLUSH);
+
     cfsetospeed(&termios, B115200);
-    cfsetispeed(&termios, B115200);
+    // cfsetispeed(&termios, B115200);
+
     tcsetattr(uart_fd, TCSANOW, &termios);
 }
 
@@ -891,7 +912,7 @@ void proc_i2s()
 void proc_enable_hci()
 {
     int i = N_HCI;
-    int proto = HCI_UART_H4;
+    int proto = HCI_UART_BCM; // orig: HCI_UART_H4;
 
     log2file("proc_enable_hci:\n");
 
@@ -964,12 +985,19 @@ static void make_daemon()
 #endif
 }
 
+static void erase_log()
+{
+    remove(LOG_FILE_NAME);
+}
+
 int main(int argc, char** argv)
 {
     if (argc < 3) {
         usage("brcm_patchram_plus");
         return (1);
     }
+
+    erase_log();
 
     make_daemon();
 
