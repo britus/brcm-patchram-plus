@@ -150,10 +150,14 @@
 #define N_HCI 15
 #endif
 
+// from kernel 4.4.176
 #define HCIUARTSETPROTO _IOW('U', 200, int)
 #define HCIUARTGETPROTO _IOR('U', 201, int)
 #define HCIUARTGETDEVICE _IOR('U', 202, int)
+#define HCIUARTSETFLAGS _IOW('U', 203, int)
+#define HCIUARTGETFLAGS _IOR('U', 204, int)
 
+// from kernel 4.4.176
 #define HCI_UART_H4 0
 #define HCI_UART_BCSP 1
 #define HCI_UART_3WIRE 2
@@ -650,15 +654,26 @@ int parse_cmd_line(int argc, char** argv)
     return (0);
 }
 
-void init_uart()
+int init_uart(struct termios* termios)
 {
+    int ret;
+
     log2file("init_uart:\n");
 
-    tcflush(uart_fd, TCIOFLUSH);
-    tcgetattr(uart_fd, &termios);
+    /* cleanup uart buffers */
+    if (tcflush(uart_fd, TCIOFLUSH)) {
+        log2file("Failed to flush uart:\n");
+        return -EIO;
+    }
+
+    /* get current terminal settings */
+    if (tcgetattr(uart_fd, termios)) {
+        log2file("Failed to get terminal settings:\n");
+        return -EIO;
+    }
 
 #ifndef __CYGWIN__
-    cfmakeraw(&termios);
+    cfmakeraw(termios);
 #else
     termios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
                          | INLCR | IGNCR | ICRNL | IXON);
@@ -668,19 +683,30 @@ void init_uart()
     termios.c_cflag |= CS8;
 #endif
 
-    termios.c_cflag |= CRTSCTS;
-    
-    tcsetattr(uart_fd, TCSANOW, &termios);
-    tcflush(uart_fd, TCIOFLUSH);
+    /* set hardware flow control */
+    termios->c_cflag |= CRTSCTS;
+    ret = tcsetattr(uart_fd, TCSANOW, termios);
+    ret |= tcflush(uart_fd, TCIOFLUSH);
+    if (ret) {
+        log2file("Failed to set hardware flow control:\n");
+        return -EIO;
+    }
 
-    tcsetattr(uart_fd, TCSANOW, &termios);
-    tcflush(uart_fd, TCIOFLUSH);
+#if 0
+    ret = tcsetattr(uart_fd, TCSANOW, termios);
+    ret |= tcflush(uart_fd, TCIOFLUSH);
+    if (ret) {
+        log2file("Failed to set hardware flow control:\n");
+        return -EIO;
+    }
     // tcflush(uart_fd, TCIOFLUSH);
+#endif
 
-    cfsetospeed(&termios, B115200);
+    cfsetospeed(termios, B115200);
     // cfsetispeed(&termios, B115200);
 
-    tcsetattr(uart_fd, TCSANOW, &termios);
+    tcsetattr(uart_fd, TCSANOW, termios);
+    return 0;
 }
 
 void dump(uchar* out, int len)
@@ -1013,12 +1039,12 @@ int main(int argc, char** argv)
         exit(2);
     }
 
-    init_uart();
-
+    if (!init_uart(&termios)) {
+        log2file("#UART initialization failed. rc=%d\n", -2);
+        exit(2);
+    }
     proc_reset();
-
     proc_read_local_name();
-
     proc_open_patchram();
 
     if (use_baudrate_for_download) {
