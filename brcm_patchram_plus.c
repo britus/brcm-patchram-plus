@@ -938,7 +938,7 @@ void proc_i2s()
 void proc_enable_hci()
 {
     int i = N_HCI;
-    int proto = HCI_UART_BCM; // orig: HCI_UART_H4;
+    int proto = HCI_UART_H4;
 
     log2file("proc_enable_hci:\n");
 
