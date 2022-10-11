@@ -185,7 +185,7 @@ typedef struct {
 
 static const fw_auto_detection_entry_t fw_auto_detection_table[] = {
     { "4343A0", "BCM43438A0" }, // AP6212
-    { "BCM43430A1", "BCM43438A1" }, // AP6212A
+    { "BCM43430A1", "BCM43430A1" }, // AP6212A
     { "BCM20702A", "BCM20710A1" }, // AP6210B
     { "BCM4335C0", "BCM4339A0" }, // AP6335
     { "BCM4330B1", "BCM40183B2" }, // AP6330
@@ -766,7 +766,7 @@ void hci_send_cmd(uchar* buf, int len)
 
 void expired(int sig)
 {
-    log2file("expired: send hci_reset\n");
+    log2file("Command TIMED OUT: try reset chip.\n");
     hci_send_cmd(hci_reset, sizeof(hci_reset));
     alarm(4);
 }
@@ -777,12 +777,10 @@ void proc_reset()
 
     log2file("proc_reset: send hci_reset\n");
     hci_send_cmd(hci_reset, sizeof(hci_reset));
-
     alarm(4);
 
     log2file("proc_reset: read resp. event\n");
     read_event(uart_fd, buffer);
-
     alarm(0);
 }
 
@@ -1064,7 +1062,7 @@ int main(int argc, char** argv)
         log2file("#Setup baudrate. rc=%d\n", 0);
         proc_baudrate();
     }
-
+#if 0
     if (bdaddr_flag) {
         log2file("#Setup MAC address. rc=%d\n", 0);
         proc_bdaddr();
@@ -1084,7 +1082,7 @@ int main(int argc, char** argv)
         log2file("#Enable I2C. rc=%d\n", 0);
         proc_i2s();
     }
-
+#endif
     if (enable_hci) {
         log2file("#Enter HCI loop. rc=%d\n", 0);
 

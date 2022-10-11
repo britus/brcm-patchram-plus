@@ -25,4 +25,4 @@ clean :
 
 install: $(TARGET)
 	cp $(SCRIPT) /usr/local/bin/$(SCRIPT)
-	mv $(TARGET) /bin/$(TARGET)
+	mv $(TARGET) /usr/local/bin/brcm
