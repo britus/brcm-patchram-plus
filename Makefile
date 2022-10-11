@@ -15,13 +15,13 @@ SCRIPT     = download-bluetooth-firmware.sh
 all : $(TARGET)
 
 $(TARGET) : $(OBJECTS)
-		$(GXX) -static -o $(TARGET) $(OBJECTS)
+	$(GXX) -static -o $(TARGET) $(OBJECTS)
 
 .c.o :
-		$(GXX) $(INC) $(CFLAGS) $<
+	$(GXX) $(INC) $(CFLAGS) $<
 
 clean :
-		rm -rf $(OBJECTS) $(TARGET) core
+	rm -rf $(OBJECTS) $(TARGET) core
 
 install: $(TARGET)
 	cp $(SCRIPT) /usr/local/bin/$(SCRIPT)
