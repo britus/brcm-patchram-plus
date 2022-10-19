@@ -83,17 +83,17 @@ void daemonize(const char *cmd)
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     if (sigaction(SIGHUP, &sa, NULL) < 0) {
-        log2file("%s: can't ignore SIGHUP\n");
+        log2file("%s: can't ignore SIGHUP\n", cmd);
         exit(1);
     }
-    
+#if 0
     if ((pid = fork()) < 0) {
         log2file("%s: can't fork\n", cmd);
         exit(1);
     } else if (pid != 0) /* parent */ {
         exit(0);
     }
-
+#endif
     /*
      * Change the current working directory to the root so
      * we won't prevent file systems from being unmounted.
